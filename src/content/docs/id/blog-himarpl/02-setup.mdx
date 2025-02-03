@@ -36,8 +36,8 @@ Proyek ini memerlukan beberapa _environment variable_ yang harus disetel dalam _
      - `GOOGLE_CLIENT_ID`
      - `GOOGLE_CLIENT_SECRET`
 
-3. **Konfigurasi Pembatasan Laju Upstash**
-   - Ikuti [Panduan Pembatasan Laju Upstash](https://upstash.com/docs/oss/sdks/ts/ratelimit/gettingstarted) untuk mendapatkan:
+3. **Konfigurasi _Rate Limitting_ Upstash**
+   - Ikuti [Panduan _Rate Limitting_ Upstash](https://upstash.com/docs/oss/sdks/ts/ratelimit/gettingstarted) untuk mendapatkan:
      - `UPSTASH_REDIS_REST_URL`
      - `UPSTASH_REDIS_REST_TOKEN`
 
@@ -50,7 +50,7 @@ Proyek ini memerlukan beberapa _environment variable_ yang harus disetel dalam _
 
 <Steps>
 
-1. _Fork_ dan _clone_ repositorinya:
+1. Fork dan clone repositorinya:
 
    <Tabs>
      <TabItem label="HTTPS">
@@ -112,7 +112,7 @@ Proyek ini memerlukan beberapa _environment variable_ yang harus disetel dalam _
    BOT_API_TOKEN=
    ```
 
-4. Atur _remote_ _upstream_:
+4. Atur remote upstream:
 
    <Tabs>
      <TabItem label="HTTPS">
@@ -148,14 +148,14 @@ Proyek ini memerlukan beberapa _environment variable_ yang harus disetel dalam _
 
    Sekarang, aplikasinya seharusnya berjalan pada `http://localhost:3000`.
 
-6. Buat _branch_ baru untuk perubahan yang Anda lakukan
+6. Buat branch baru untuk perubahan yang Anda lakukan
 
    ```bash
    git checkout -b my-feature-branch
    ```
 
 
-7. Setelah Anda puas dengan perubahannya, _add_ dan _commit_ perubahan tersebut pada _branch_ Anda, kemudian _push_ _branch_ Anda ke repositori _fork_.
+7. Setelah Anda puas dengan perubahannya, add dan commit perubahan tersebut pada branch Anda, kemudian push branch Anda ke repositori fork.
 
    ```bash
    git add .
@@ -164,12 +164,12 @@ Proyek ini memerlukan beberapa _environment variable_ yang harus disetel dalam _
    ```
 
    :::note[PENTING]
-    Sebelum melakukan _commit_ dan membuka _Pull Request_, tolong baca [Panduan Commit](/id/getting-started/05-contribution-guide/#commit-guidelines) dan [Kebijakan Pull Request](/id/getting-started/05-contribution-guide/#pull-request-policy) berikut.
+    Sebelum melakukan commit dan membuka Pull Request, tolong baca [Panduan Commit](/id/getting-started/05-contribution-guide/#commit-guidelines) dan [Kebijakan Pull Request](/id/getting-started/05-contribution-guide/#pull-request-policy) berikut.
    :::
 
-8. Buat _Pull Request_.
+8. Buat Pull Request.
    :::note[CATATAN]
-    Kami mengimbau kepada pembuat PR untuk menghindari _rebasing_/memperbarui PR Anda dengan `main` _branch_ secara tidak perlu.
+    Kami mengimbau kepada pembuat PR untuk menghindari _rebasing_/memperbarui PR Anda dengan `main` branch secara tidak perlu.
    :::
 </Steps>
 
