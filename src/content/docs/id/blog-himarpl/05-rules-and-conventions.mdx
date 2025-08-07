@@ -1,0 +1,107 @@
+---
+title: Peraturan dan Konvensi
+description: Pelajari tentang peraturan dan konvensi yang digunakan dalam proyek website Blog HIMARPL.
+---
+
+Untuk menegakkan gaya kode yang konsisten dan menghindari masalah umum dalam basis kode, kami memiliki serangkaian aturan dan konvensi yang kami ikuti dan terapkan di seluruh proyek.
+
+## Typescript
+
+Starter ini menggunakan TypeScript untuk menyediakan type safety dan menghindari bug umum dalam basis kode. Konfigurasi proyek didasarkan pada T3 Stack dengan beberapa pembaruan.
+
+Jika Anda belum familiar dengan TypeScript, Anda dapat memeriksa artikel ini untuk mempelajari lebih lanjut: [Typescript for React Developers](https://elazizi.com/posts/how-to-learn-typescript-for-react-developers/)
+
+Anda dapat menemukan informasi lebih lanjut tentang hal ini [di sini](https://create.t3.gg/en/usage/typescript).
+
+## Penamaan
+
+Kami mengikuti kabab-case untuk penamaan file dan folder karena kami pikir itu adalah cara yang paling mudah dibaca dan konsisten untuk menamai file dan folder dalam proyek besar dan merupakan cara paling umum untuk menamai file dan folder di komunitas React.
+
+Contoh penamaan kabab-case: `my-component.tsx`
+
+Untuk penamaan variabel, fungsi, kelas, interface, dan enum, kami mengikuti camelCase karena ini adalah cara paling umum untuk menamai variabel di komunitas React.
+
+Contoh penamaan camelCase: `const myFunction = () => {}`
+
+
+## Linting
+
+Menggunakan linter adalah suatu keharusan dalam proyek JavaScript apa pun. Untuk pemula, kami menggunakan ESLint dengan konfigurasi T3 Stack dan beberapa aturan kustom untuk memastikan bahwa kami mengikuti aturan dan konvensi yang berkaitan dengan penamaan file, kelas Tailwind CSS, tipe TypeScript, urutan import, dan lainnya.
+
+Berikut adalah file konfigurasi ESLint lengkap:
+
+```javascript title="eslintrc.cjs"
+/** @type {import("eslint").Linter.Config} */
+const config = {
+  parser: "@typescript-eslint/parser",
+  parserOptions: {
+    project: true,
+  },
+  plugins: ["@typescript-eslint", "unused-imports", "simple-import-sort"],
+  extends: [
+    "next/core-web-vitals",
+    "plugin:@typescript-eslint/recommended-type-checked",
+    "plugin:@typescript-eslint/stylistic-type-checked",
+    "prettier",
+  ],
+  rules: {
+    // Aturan opinionated ini diaktifkan dalam stylistic-type-checked di atas.
+    // Silakan konfigurasikan ulang sesuai preferensi Anda sendiri.
+    "import/prefer-default-export": "off",
+    "@typescript-eslint/array-type": "off",
+    "@typescript-eslint/consistent-type-definitions": "off",
+
+    "simple-import-sort/imports": [
+      "error",
+      {
+        groups: [
+          // `react` pertama, `next` kedua, lalu paket yang dimulai dengan karakter
+          ["^react$", "^next", "^[a-z]"],
+          // Paket yang dimulai dengan `@`
+          ["^@"],
+          // Paket yang dimulai dengan `~`
+          ["^~"],
+          // Import yang dimulai dengan `../`
+          ["^\\.\\.(?!/?$)", "^\\.\\./?$"],
+          // Import yang dimulai dengan `./`
+          ["^\\./(?=.*/)(?!/?$)", "^\\.(?!/?$)", "^\\./?$"],
+          // Import style
+          ["^.+\\.s?css$"],
+          // Import side effect
+          ["^\\u0000"],
+        ],
+      },
+    ],
+    "simple-import-sort/exports": "error", // Konfigurasi export untuk `eslint-plugin-simple-import-sort`
+
+    "unused-imports/no-unused-imports": "error",
+    "unused-imports/no-unused-vars": [
+      "error",
+      {
+        argsIgnorePattern: "^_",
+        varsIgnorePattern: "^_",
+        caughtErrorsIgnorePattern: "^_",
+      },
+    ],
+
+    "@typescript-eslint/consistent-type-imports": [
+      "warn",
+      {
+        prefer: "type-imports",
+        fixStyle: "inline-type-imports",
+      },
+    ],
+
+    "@typescript-eslint/no-unused-vars": ["warn", { argsIgnorePattern: "^_" }],
+    "@typescript-eslint/require-await": "off",
+    "@typescript-eslint/no-misused-promises": [
+      "error",
+      {
+        checksVoidReturn: { attributes: false },
+      },
+    ],
+  },
+};
+
+module.exports = config;
+```

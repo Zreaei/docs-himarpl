@@ -1,0 +1,208 @@
+---
+title: bot-himarpl
+description: Bot Telegram untuk HIMARPL
+---
+
+import { Tabs, TabItem } from "@astrojs/starlight/components";
+import { Steps } from "@astrojs/starlight/components";
+import { Code } from "@astrojs/starlight/components";
+
+![Phoenix-chan](https://cdn.jsdelivr.net/gh/himarplupi/assets-himarpl@main/images/phoenix-chan-512x512.png)
+
+Bot Telegram HIMARPL bernama Phoenix Chan tersedia di [@himarpl_bot](https://t.me/himarpl_bot).
+
+## Fitur Utama 
+
+- Sistem Notifikasi untuk Posting Blog
+- Interaksi Berbasis Perintah
+- Perlindungan Pembatasan Tingkat
+- Integrasi Webhook
+- Integrasi Database dengan NeonDB
+- Dukungan Edge Runtime
+
+## Dependensi Inti
+
+**Framework & Runtime**
+
+- Next.js 14
+- Node.js
+- TypeScript
+- Edge Runtime
+
+**Database & API**
+
+- DrizzleORM
+- NeonDB
+- tRPC
+- Zod
+
+**Integrasi Bot**
+
+- Telegram Bot API
+- node-telegram-bot-api Types
+
+**Tool Pengembangan**
+
+- ESLint
+- Prettier
+- TypeScript
+- Drizzle Kit
+
+## Struktur Proyek
+
+- `/src/bot` - Logika bot dan respons
+- `/src/server` - Rute API dan skema database
+- `/src/app` - Halaman app router Next.js
+- `/src/trpc` - Konfigurasi tRPC
+- `/src/lib` - Fungsi utilitas
+
+## Setup Pengembangan Lokal
+
+Panduan ini akan memandu Anda melalui pengaturan lingkungan pengembangan lokal untuk Bot Telegram HIMARPL.
+
+### Prasyarat
+
+Sebelum menginstal aplikasi, pastikan Anda memiliki:
+
+1. [Node.js](https://nodejs.org/en) dan [npm](https://www.npmjs.com/) terinstal
+2. [Git](https://git-scm.com/) terinstal
+3. Token Bot Telegram (dapatkan dari [@BotFather](https://t.me/botfather)) ikuti panduan [Telegram API](https://core.telegram.org/bots#how-do-i-create-a-bot) untuk mendapatkan `TELEGRAM_BOT_TOKEN` dan `TELEGRAM_BOT_SECRET`.
+4. URL Database NeonDB (ikuti panduan [NeonDB](https://neon.tech/docs/get-started-with-neon/connect-neon#obtaining-connection-details) untuk `DATABASE_URL`)
+5. Upstash Redis untuk Rate Limiting (ikuti panduan [Upstash Ratelimiting](https://upstash.com/docs/oss/sdks/ts/ratelimit/gettingstarted) untuk mendapatkan `UPSTASH_REDIS_REST_URL` dan `UPSTASH_REDIS_REST_TOKEN`)
+
+### Langkah Setup
+
+<Steps>
+
+1. Fork dan clone repositori:
+
+   <Tabs>
+     <TabItem label="HTTPS">
+       ```bash
+       git clone https://github.com/himarplupi/bot-himarpl.git
+       ```
+     </TabItem>
+     <TabItem label="SSH">
+       ```bash
+       git clone git@github.com:himarplupi/bot-himarpl.git
+       ```
+     </TabItem>
+     <TabItem label="GitHub CLI">
+       ```bash
+       gh repo clone himarplupi/bot-himarpl
+       ```
+     </TabItem>
+   </Tabs>
+
+2. Navigasi ke direktori proyek:
+
+   ```bash
+   cd bot-himarpl
+   ```
+
+3. Buat file `.env` dengan variabel yang diperlukan:
+
+   ```bash
+   DATABASE_URL=
+   TELEGRAM_BOT_TOKEN=
+   TELEGRAM_BOT_SECRET=
+   TELEGRAM_BOT_USERNAME=
+   TELEGRAM_BOT_API_URL=
+   UPSTASH_REDIS_REST_URL=
+   UPSTASH_REDIS_REST_TOKEN=
+   API_TOKEN=
+   ```
+
+4. Setup remote upstream:
+
+   <Tabs>
+     <TabItem label="HTTPS">
+       ```bash
+       git remote add upstream https://github.com/himarplupi/bot-himarpl.git
+       ```
+     </TabItem>
+     <TabItem label="SSH">
+       ```bash
+       git remote add upstream git@github.com:himarplupi/bot-himarpl.git
+       ```
+     </TabItem>
+     <TabItem label="GitHub CLI">
+       ```bash
+       gh repo sync himarplupi/bot-himarpl
+       ```
+     </TabItem>
+   </Tabs>
+
+5. Instal dependensi dan mulai pengembangan:
+
+   ```bash
+   npm run db:push    # Push skema database
+   npm ci             # Instal dependensi
+   npm run dev        # Mulai server pengembangan
+   npm run ngrok      # Mulai terowongan ngrok
+   npm run tl:set-webhook <NGROK_URL>  # Set webhook Telegram
+   ```
+
+6. Buat branch baru untuk perubahan Anda:
+
+   ```bash
+   git checkout -b my-feature-branch
+   ```
+
+7. Setelah membuat perubahan, commit dan push:
+
+   ```bash
+   git add .
+   git commit # Ikuti conventional commits
+   git push -u origin my-feature-branch
+   ```
+
+   :::note[PENTING]
+   Sebelum melakukan commit, silakan baca bagian [Pedoman Commit](https://github.com/himarplupi/bot-himarpl/blob/main/CONTRIBUTING.md#pedoman-commit).
+   :::
+
+8. Buat Pull Request
+   :::note[CATATAN]
+   Kami meminta penulis PR untuk menghindari rebasing yang tidak perlu dengan branch main.
+   :::
+
+</Steps>
+
+### Script yang Tersedia
+
+Repositori ini berisi beberapa script dan perintah untuk berbagai tugas. Perintah yang paling relevan dijelaskan di bawah ini.
+
+<details>
+  <summary>Perintah untuk Menjalankan & Membangun Website atau Bot</summary>
+
+- `npm run dev` menjalankan server pengembangan Next.js lokal, mendengarkan di `http://localhost:3000/`.
+- `npm run build` membangun aplikasi dalam mode produksi. Output terletak di folder `.next` secara default.
+  - Ini digunakan untuk Deployment Vercel HIMARPL (Preview & Production)
+- `npm run start` memulai server web yang menjalankan konten yang dibangun dari `npm run build`
+- `npm run ngrok` membuat terowongan ngrok lokal sehingga localhost Anda dapat diakses dari internet.
+- `npm run tl:set-webhook <URL_NGROK>` mengubah webhook Telegram ke URL ngrok.
+- `npm run tl:set-command` mengatur perintah bot Telegram (pastikan untuk menulis perintah di file `setCommands.js` juga).
+
+</details>
+
+<details>
+  <summary>Perintah untuk Pemeliharaan dan Pengujian</summary>
+
+- `npm run db:push` mendorong skema database ke NeonDB.
+- `npm run db:studio` menjalankan prisma studio untuk manajemen database.
+- `npm run lint` menjalankan linter untuk semua file.
+- `npm run test` menjalankan semua tes secara lokal
+
+</details>
+
+## Dukungan
+
+Untuk pertanyaan atau masalah:
+
+- [GitHub Issues](https://github.com/himarplupi/bot-himarpl/issues)
+- Hubungi Departemen Kominfo HIMARPL
+- Kunjungi [himarpl.com](https://www.himarpl.com)
+
+## Lisensi
+
+Proyek ini dilisensikan di bawah Lisensi MIT - lihat file [LICENSE](https://github.com/himarplupi/bot-himarpl/blob/main/LICENSE) untuk detailnya.

@@ -1,0 +1,184 @@
+---
+title: Environment Variables dan Konfigurasi
+description: Pelajari cara mengkonfigurasi environment variables dan konfigurasi lainnya dalam proyek website Blog HIMARPL.
+---
+
+Mengelola environment variables dalam proyek kami adalah tugas yang penting, tetapi juga bisa menantang. Proyek ini menggunakan environment variables untuk manajemen konfigurasi, memanfaatkan [t3-env](https://github.com/t3-oss/t3-env) untuk environment variables yang type-safe dengan validasi runtime. Ketika Anda menambahkan environment variables baru, Anda perlu memperbarui file `.env.example` dan file `src/env.js` untuk memastikan semuanya berfungsi dengan benar.
+
+## File Konfigurasi
+
+### 1. Skema Environment (`src/env.js`)
+
+File `env.js` mendefinisikan skema dan aturan validasi untuk semua environment variables menggunakan Zod. Ini dibagi menjadi tiga bagian utama:
+
+```javascript title="src/env.js"
+import { z } from "zod";
+import { createEnv } from "@t3-oss/env-nextjs";
+
+export const env = createEnv({
+  /**
+   * Tentukan skema environment variables server-side Anda di sini. Dengan cara ini Anda dapat memastikan aplikasi
+   * tidak dibangun dengan env vars yang tidak valid.
+   */
+  server: {
+    DATABASE_URL: z
+      .string()
+      .url()
+      .refine(
+        (str) => !str.includes("YOUR_MYSQL_URL_HERE"),
+        "Anda lupa mengubah URL default",
+      ),
+    NEXTAUTH_SECRET:
+      process.env.NODE_ENV === "production"
+        ? z.string()
+        : z.string().optional(),
+    NEXTAUTH_URL: z.preprocess(
+      // Ini membuat deployment Vercel tidak gagal jika Anda tidak menetapkan NEXTAUTH_URL
+      // Karena NextAuth.js secara otomatis menggunakan VERCEL_URL jika ada.
+      (str) => process.env.VERCEL_URL ?? str,
+      // VERCEL_URL tidak menyertakan `https` sehingga tidak dapat divalidasi sebagai URL
+      process.env.VERCEL ? z.string() : z.string().url(),
+    ),
+    GOOGLE_CLIENT_ID: z.string(),
+    GOOGLE_CLIENT_SECRET: z.string(),
+    NODE_ENV: z
+      .enum(["development", "test", "production"])
+      .default("development"),
+    BASE_URL: z.string().url(),
+    BASE_PATH: z.string().optional(),
+    BOT_API_URL: z.string().url().optional(),
+    BOT_API_TOKEN: z.string().optional(),
+  },
+
+  /**
+   * Tentukan skema environment variables client-side Anda di sini. Dengan cara ini Anda dapat memastikan aplikasi
+   * tidak dibangun dengan env vars yang tidak valid. Untuk mengeksposnya ke klien, awali dengan
+   * `NEXT_PUBLIC_`.
+   */
+  client: {
+    // NEXT_PUBLIC_CLIENTVAR: z.string(),
+  },
+
+  /**
+   * Anda tidak dapat mendestruct `process.env` sebagai objek biasa di runtime edge Next.js (mis.
+   * middlewares) atau client-side sehingga kita perlu mendestruct secara manual.
+   */
+  runtimeEnv: {
+    DATABASE_URL: process.env.DATABASE_URL,
+    NODE_ENV: process.env.NODE_ENV,
+    BASE_URL: process.env.NEXT_PUBLIC_BASE_URL
+      ? process.env.NEXT_PUBLIC_BASE_URL
+      : process.env.NEXT_PUBLIC_VERCEL_URL
+        ? `https://${process.env.NEXT_PUBLIC_VERCEL_URL}`
+        : "https://himarpl.com",
+    // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
+    BASE_PATH: process.env.NEXT_PUBLIC_BASE_PATH || "",
+    NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
+    NEXTAUTH_URL: process.env.NEXTAUTH_URL,
+    GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
+    GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
+    BOT_API_URL: process.env.BOT_API_URL,
+    BOT_API_TOKEN: process.env.BOT_API_TOKEN,
+  },
+  /**
+   * Jalankan `build` atau `dev` dengan `SKIP_ENV_VALIDATION` untuk melewati validasi env. Ini sangat
+   * berguna untuk build Docker.
+   */
+  skipValidation: !!process.env.SKIP_ENV_VALIDATION,
+  /**
+   * Membuatnya sehingga string kosong diperlakukan sebagai undefined.
+   * `SOME_VAR: z.string()` dan `SOME_VAR=''` akan memunculkan error.
+   */
+  emptyStringAsUndefined: true,
+});
+```
+
+### 2. File Environment (`.env`)
+
+Buat file `.env` di root proyek dengan nilai-nilai spesifik environment Anda:
+
+```bash
+NEXT_PUBLIC_BASE_URL="http://localhost:3000"
+NEXT_PUBLIC_BASE_PATH=""
+NEXT_BASE_URL="http://localhost:3000"
+
+# Konfigurasi Database
+DATABASE_URL=
+
+# Konfigurasi NextAuth
+NEXTAUTH_SECRET=
+NEXTAUTH_URL="http://localhost:3000"
+GOOGLE_CLIENT_ID=
+GOOGLE_CLIENT_SECRET=
+
+# Konfigurasi Upstash Redis
+UPSTASH_REDIS_REST_URL=
+UPSTASH_REDIS_REST_TOKEN=
+
+# Konfigurasi PostHog (Opsional)
+NEXT_PUBLIC_POSTHOG_KEY=
+NEXT_PUBLIC_POSTHOG_HOST=https://us.i.posthog.com
+
+# Konfigurasi Bot (Opsional)
+BOT_API_URL=
+BOT_API_TOKEN=
+```
+
+## Fitur Utama
+
+- **Type Safety**: Semua environment variables divalidasi saat build dan runtime
+- **Validasi Runtime**: Memastikan aplikasi Anda tidak dibangun dengan env vars yang tidak valid
+- **Keamanan Client-Side**: Pemisahan yang jelas antara variabel server dan client
+- **Nilai Default**: Fallback untuk variabel tertentu ketika tidak ditentukan
+- **Penanganan String Kosong**: String kosong diperlakukan sebagai undefined secara default
+
+## Panduan Penggunaan
+
+1. **Variabel Server-Side**:
+   - Akses menggunakan `env.VARIABLE_NAME`
+   - Tidak pernah diekspos ke client
+   - Contoh: `env.DATABASE_URL`
+
+2. **Variabel Client-Side**:
+   - Harus diawali dengan `NEXT_PUBLIC_`
+   - Dapat diakses di kode server dan client
+   - Contoh: `env.NEXT_PUBLIC_POSTHOG_KEY`
+
+3. **Development**:
+   - Buat file `.env` lokal berdasarkan `.env.example`
+   - Jangan pernah commit `.env` ke version control
+   - Perbarui skema `env.js` saat menambahkan variabel baru
+
+## Contoh Penggunaan
+
+```javascript title="src/server/db.ts" {1, 7, 16}
+import { env } from "@/env";
+import { PrismaClient } from "@prisma/client";
+
+const createPrismaClient = () =>
+  new PrismaClient({
+    log:
+      env.NODE_ENV === "development" ? ["query", "error", "warn"] : ["error"],
+  });
+
+const globalForPrisma = globalThis as unknown as {
+  prisma: ReturnType<typeof createPrismaClient> | undefined;
+};
+
+export const db = globalForPrisma.prisma ?? createPrismaClient();
+
+if (env.NODE_ENV !== "production") globalForPrisma.prisma = db;
+
+```
+
+Anda dapat mengakses environment variables dalam kode Anda seperti ini:
+
+```javascript
+import { env } from "@/env.js";
+
+// Penggunaan server-side
+const dbUrl = env.DATABASE_URL;
+
+// Penggunaan client-side
+const posthogKey = env.NEXT_PUBLIC_POSTHOG_KEY;
+```

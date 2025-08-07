@@ -1,0 +1,147 @@
+---
+title: Struktur Folder
+description: Struktur Folder Website PMB HIMARPL
+---
+
+import { FileTree } from '@astrojs/starlight/components';
+
+<FileTree>
+- prisma/ # Database management (Prisma ORM)
+  - schema.prisma # Database schema definitions and relationships
+- public/
+- src/ # Main source code directory
+  - app/ # Next.js App Router directory
+    - _components/ # homepage specific components
+    - api/ # API routes
+      - trpc/ # tRPC API configuration
+        - [trpc]/ # tRPC dynamic routes
+    - contact/ # Contact page
+      - page.tsx
+    - information/ # Information pages on registration
+      - [type]/ # Dynamic route for different types of registration
+        - _components/ # type specific components
+        - [subinfo]/ # Dynamic route for different subinformation
+          - page.tsx
+    - news/ # News page
+      - page.tsx
+    - software-engineering/ # About Software Engineering page
+      - page.tsx
+    - page.tsx # Homepage
+    - layout.tsx # Root layout
+  - components/ # global components
+    - ui/ # Reusable UI components (shadcn/ui)
+    - provider.tsx # Providers
+  - images/ # Images
+  - lib/ # Utility functions and shared logic
+    - utils.ts # General utility functions
+  - server/ # Server-side code
+    - api/ # Server-side API implementations
+  - styles/ # Styling files
+    - globals.css # Global CSS styles
+  - trpc/ # tRPC configurations and routers
+  - env.js # Environment variable validation (t3-env)
+</FileTree>
+
+## Penjelasan Struktur Direktori
+
+Proyek ini mengikuti arsitektur [T3 Stack](https://create.t3.gg/), yang menekankan type-safety dan modularitas. Struktur di atas menunjukkan organisasi berbasis fitur kami, pemisahan kode klien/server yang jelas, dan kepatuhan pada konvensi Next.js App Router.
+
+### Direktori Root
+
+- **prisma/**: Berisi file yang berkaitan dengan database menggunakan Prisma ORM
+  - `schema.prisma`: Mendefinisikan model database, hubungan, dan konfigurasi
+- **public/**: Aset statis yang disajikan langsung
+- **src/**: Direktori kode sumber utama yang berisi semua kode aplikasi
+
+### Direktori App (Next.js App Router)
+
+Direktori `app/` mengikuti konvensi Next.js 13+ App Router:
+
+- **_components/**: Komponen khusus homepage
+- **api/**: Rute API backend
+  - `trpc/`: Konfigurasi API tRPC dan endpoint dengan routing dinamis
+- **Halaman berbasis fitur**: Setiap fitur utama memiliki direktori sendiri
+  - `contact/`: Halaman kontak
+  - `information/`: Halaman informasi pendaftaran dengan routing dinamis
+  - `news/`: Halaman berita
+  - `software-engineering/`: Halaman tentang Rekayasa Perangkat Lunak
+- **File root**: 
+  - `page.tsx`: Homepage
+  - `layout.tsx`: Layout root
+
+### Direktori Inti
+
+- **components/**: Komponen global
+  - `ui/`: Komponen UI yang dapat digunakan kembali (menggunakan shadcn/ui)
+  - `provider.tsx`: Provider aplikasi
+- **images/**: Aset gambar
+- **lib/**: Fungsi utilitas dan logika bersama
+  - `utils.ts`: Fungsi utilitas umum
+- **server/**: Kode khusus sisi server
+  - `api/`: Implementasi API sisi server
+- **styles/**: Konfigurasi styling global
+  - `globals.css`: Gaya CSS global
+- **trpc/**: Konfigurasi dan router tRPC
+- **env.js**: Validasi environment variable menggunakan t3-env
+
+## Mengimpor File
+
+Untuk mengimpor file, Anda dapat menggunakan alias `@/`. Alias ini dikonfigurasi secara otomatis dalam proyek.
+
+```tsx title="src/app/news/page.tsx"
+import { CTAContactSection, Footer, GlobalFooter } from "@/app/_components";
+import { Avatar, AvatarImage } from "@/components/ui/avatar";
+import { badgeVariants } from "@/components/ui/badge";
+import { buttonVariants } from "@/components/ui/button";
+```
+
+Pendekatan ini sangat berguna ketika Anda bekerja pada proyek besar dengan banyak file dan folder dan dapat dilakukan dengan memperbarui file tsconfig.json menjadi berikut:
+
+<details>
+<summary>Konfigurasi Typescript</summary>
+
+```diff lang="json" title="tsconfig.json" 
+{
+  "compilerOptions": {
+    /* Base Options: */
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "target": "es2022",
+    "allowJs": true,
+    "resolveJsonModule": true,
+    "moduleDetection": "force",
+    "isolatedModules": true,
+
+    /* Strictness */
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "checkJs": true,
+
+    /* Bundled projects */
+    "lib": ["dom", "dom.iterable", "ES2022"],
+    "noEmit": true,
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "jsx": "preserve",
+    "plugins": [{ "name": "next" }],
+    "incremental": true,
+
+    /* Path Aliases */
+    "baseUrl": ".",
++    "paths": {
++      "@/*": ["./src/*"]
++    }
+  },
+  "include": [
+    ".eslintrc.cjs",
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    "**/*.cjs",
+    "**/*.js",
+    ".next/types/**/*.ts"
+  ],
+  "exclude": ["node_modules", "lint-staged.config.js", "commitlint.config.js"]
+}
+```
+</details>

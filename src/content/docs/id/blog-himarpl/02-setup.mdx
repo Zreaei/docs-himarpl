@@ -1,0 +1,184 @@
+---
+title: Konfigurasi Pengembangan Lokal
+description: Bagaimana cara melakukan konfigurasi pengembangan lokal Website Blog HIMARPL
+---
+
+import { Tabs, TabItem } from "@astrojs/starlight/components";
+import { Steps } from "@astrojs/starlight/components";
+import { Code } from "@astrojs/starlight/components";
+
+Panduan ini akan memandu Anda melalui pengaturan environment pengembangan lokal untuk website Blog HIMARPL.
+
+## Prasyarat
+
+Sebelum menginstal aplikasi, pastikan Anda memiliki:
+
+1. [Node.js](https://nodejs.org/en) dan [npm](https://www.npmjs.com/) terinstal
+2. [Git](https://git-scm.com/) terinstal
+3. Akses ke layanan berikut:
+   - Akun CockroachDB
+   - Kredensial Google OAuth
+   - Akun Upstash
+   - Akun PostHog (opsional)
+
+
+## Detail Pengaturan Environment
+
+Proyek ini memerlukan beberapa environment variable yang harus diatur dalam file `.env` agar berfungsi dengan baik:
+
+### Pengaturan Layanan yang Diperlukan
+
+1. **Pengaturan CockroachDB**
+   - Ikuti [Panduan Cepat CockroachDB](https://www.cockroachlabs.com/docs/cockroachcloud/quickstart) untuk mendapatkan `DATABASE_URL` Anda
+
+2. **Pengaturan Google OAuth**
+   - Ikuti [Panduan Google OAuth](https://developers.google.com/identity/protocols/oauth2) untuk mendapatkan:
+     - `GOOGLE_CLIENT_ID`
+     - `GOOGLE_CLIENT_SECRET`
+
+3. **Pengaturan Upstash Rate Limiting**
+   - Ikuti [Panduan Upstash Ratelimiting](https://upstash.com/docs/oss/sdks/ts/ratelimit/gettingstarted) untuk mendapatkan:
+     - `UPSTASH_REDIS_REST_URL`
+     - `UPSTASH_REDIS_REST_TOKEN`
+4. **Pengaturan Bot API (opsional)** 
+   - Ikuti [Panduan Bot API](/id/other-projects/bot-himarpl) untuk mendapatkan:
+     - `BOT_API_URL`
+     - `BOT_API_TOKEN`
+
+## Langkah-langkah Pengaturan
+
+<Steps>
+
+1. Fork dan clone repositori:
+
+   <Tabs>
+     <TabItem label="HTTPS">
+       <Code
+         code={`git clone https://github.com/himarplupi/blog-himarpl.git`}
+         lang="bash"
+         title="HTTPS"
+       />
+     </TabItem>
+     <TabItem label="SSH">
+       <Code
+         code={`git clone git@github.com:himarplupi/blog-himarpl.git`}
+         lang="bash"
+         title="SSH"
+       />
+     </TabItem>
+     <TabItem label="GitHub CLI">
+       <Code
+         code={`gh repo clone himarplupi/blog-himarpl`}
+         lang="bash"
+         title="GitHub CLI"
+       />
+     </TabItem>
+   </Tabs>
+
+2. Navigasi ke direktori proyek:
+
+   ```bash
+   cd blog-himarpl
+   ```
+
+3. Buat file environment variables:
+   Buat file `.env` di direktori root dengan variabel berikut:
+
+   ```bash
+   NEXT_PUBLIC_BASE_URL="http://localhost:3000"
+   NEXT_PUBLIC_BASE_PATH=""
+   NEXT_BASE_URL="http://localhost:3000"
+
+   # Database
+   DATABASE_URL=
+
+   # Authentication
+   NEXTAUTH_SECRET=
+   NEXTAUTH_URL="http://localhost:3000"
+   GOOGLE_CLIENT_ID=
+   GOOGLE_CLIENT_SECRET=
+
+   # Rate Limiting
+   UPSTASH_REDIS_REST_URL=
+   UPSTASH_REDIS_REST_TOKEN=
+
+   # PostHog (optional)
+   NEXT_PUBLIC_POSTHOG_KEY=
+   NEXT_PUBLIC_POSTHOG_HOST=https://us.i.posthog.com
+
+   # Bot API (optional)
+   BOT_API_URL=
+   BOT_API_TOKEN=
+   ```
+
+4. Atur remote upstream:
+
+   <Tabs>
+     <TabItem label="HTTPS">
+       <Code
+         code={`git remote add upstream https://github.com/himarplupi/blog-himarpl.git`}
+         lang="bash"
+         title="HTTPS"
+       />
+     </TabItem>
+     <TabItem label="SSH">
+       <Code
+         code={`git remote add upstream git@github.com:himarplupi/blog-himarpl.git`}
+         lang="bash"
+         title="SSH"
+       />
+     </TabItem>
+     <TabItem label="GitHub CLI">
+       <Code
+         code={`gh repo sync himarplupi/blog-himarpl`}
+         lang="bash"
+         title="GitHub CLI"
+       />
+     </TabItem>
+   </Tabs>
+
+5. Instal dependensi dan mulai server pengembangan:
+
+   ```bash
+   npm ci              # Instal dependensi
+   npm run db:push     # Push skema database ke CockroachDB
+   npm run dev         # Mulai server pengembangan
+   ```
+
+   Aplikasi sekarang harus berjalan di `http://localhost:3000`.
+
+6. Buat branch baru untuk perubahan Anda:
+
+   ```bash
+   git checkout -b my-feature-branch
+   ```
+
+
+7. Setelah Anda puas dengan perubahan Anda, tambahkan dan commit mereka ke branch Anda, lalu push branch Anda ke fork Anda.
+
+   ```bash
+   git add .
+   git commit # Harap ikuti panduan commit di bawah ini   
+   git push -u origin my-feature-branch
+   ```
+
+   :::note[PENTING]
+    Sebelum melakukan commit dan membuka Pull Request, harap baca [Panduan Commit](/id/getting-started/05-contribution-guide/#panduan-commit) dan [Kebijakan Pull Request](/id/getting-started/05-contribution-guide/#kebijakan-pull-request) di bawah ini.
+   :::
+
+8. Buat Pull Request.
+   :::note[CATATAN]
+    Kami meminta penulis PR untuk menghindari rebasing/memperbarui PR mereka dengan branch `main` tanpa perlu.
+   :::
+</Steps>
+
+## Script yang Tersedia
+
+- `npm run dev` - Memulai server pengembangan dengan Turbo
+- `npm run build` - Membuat build produksi
+- `npm run start` - Memulai server produksi
+- `npm run db:push` - Push skema database ke CockroachDB
+- `npm run db:studio` - Membuka Prisma Studio untuk manajemen database
+- `npm run lint` - Menjalankan pemeriksaan linting
+- `npm run test` - Menjalankan tes Jest
+- `npm run test:watch` - Menjalankan tes Jest dalam mode watch

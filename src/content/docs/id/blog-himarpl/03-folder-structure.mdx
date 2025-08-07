@@ -1,0 +1,180 @@
+---
+title: Struktur Folder
+description: Struktur Folder Website Blog HIMARPL 
+---
+
+import { FileTree } from '@astrojs/starlight/components';
+
+<FileTree>
+- prisma/ # Manajemen database (Prisma ORM)
+  - schema.prisma # Definisi skema database
+  - seed.js # Script seeding database
+- public/
+- src/ # Direktori source code utama
+  - app/ # Next.js 14 App Router
+    - [username]/ # Rute profil pengguna dinamis
+    - api/ # Rute API
+      - trpc/ # Konfigurasi API tRPC
+    - explore-tags/ # Halaman jelajahi tag
+    - login/ # Halaman login
+    - me/ # Dashboard pengguna saat ini
+    - new/ # Rute untuk membuat post baru
+    - register/ # Halaman registrasi
+    - search/ # Fungsionalitas pencarian
+    - tag/ # Halaman tag
+      - [tag-slug]/ # Rute tag dinamis
+    - page.tsx # Halaman beranda
+    - layout.tsx # Layout root
+  - components/ # Komponen React
+    - brand/ # Komponen brand
+    - common/ # Komponen yang dibagikan
+      - navbar.tsx
+      - global-footer.tsx
+    - editor/ # Komponen editor TipTap
+    - home/ # Komponen halaman beranda
+    - me/ # Komponen dashboard pengguna
+    - post/ # Komponen post
+    - publish/ # Komponen publish
+    - search/ # Komponen pencarian
+    - ui/ # Library komponen UI (shadcn/ui)
+  - hooks/ # Custom React hooks
+  - images/ # Gambar statis
+  - lib/ # Fungsi utilitas
+    - utils.ts
+  - server/ # Kode server-side
+    - api/ # Handler API tRPC
+    - auth.ts # Setup otentikasi
+    - db.ts # Konfigurasi database
+    - ratelimit.ts # Konfigurasi rate limiting
+  - styles/ # Style global
+    - globals.css
+  - trpc/ # Setup tRPC
+  - env.js # Validasi environment variables
+</FileTree>
+
+## Penjelasan Struktur Direktori
+
+Proyek ini mengikuti arsitektur [T3 Stack](https://create.t3.gg/) dengan [TipTap](https://tiptap.dev/) untuk rich text editing. Struktur ini menekankan type-safety, modularitas, dan pemisahan yang jelas antar konsep.
+
+### Direktori Root
+
+- **prisma/**: Berisi file yang berkaitan dengan database menggunakan Prisma ORM
+  - `schema.prisma`: Mendefinisikan model database, relasi, dan konfigurasi
+  - `seed.js`: Script seeding data awal
+- **public/**: Aset statis yang disajikan langsung
+  - Gambar, font, dan sumber daya publik lainnya
+- **src/**: Direktori source code utama yang berisi semua kode aplikasi
+
+### Direktori App (Next.js App Router)
+
+Direktori `app/` mengikuti konvensi Next.js 14 App Router:
+
+- **api/**: Rute API backend
+  - `trpc/`: Konfigurasi dan endpoint API tRPC
+- **Halaman berbasis fitur**: Setiap fitur utama memiliki direktori sendiri
+  - `me/`, `search/`, `new/`, dll.
+  - Masing-masing berisi `page.tsx` untuk tampilan utama
+- **Rute Dinamis**: Menggunakan routing berbasis file Next.js
+  - `[username]/`: Rute dinamis untuk profil pengguna
+  - `tag/[tag-slug]/`: Rute dinamis untuk halaman tag
+
+### Direktori Components
+
+Komponen diorganisir berdasarkan fitur dan tanggung jawab:
+
+- **Komponen Fitur**: Dikelompokkan berdasarkan fitur
+  - `editor/`: Komponen rich text editor
+  - `home/`: Komponen khusus halaman beranda
+  - `post/`: Komponen yang berkaitan dengan post
+  - `search/`: Komponen interface pencarian
+  
+- **Komponen Umum**: Dibagikan lintas fitur
+  - `common/`: Komponen global seperti navbar dan footer
+  - `brand/`: Komponen yang berkaitan dengan branding
+  - `ui/`: Komponen UI yang dapat digunakan kembali (menggunakan shadcn/ui)
+    - Button, form, modal, dll.
+    - Konfigurasi tema dan komponen dasar
+
+### Direktori Inti
+
+- **hooks/**: Custom React hooks untuk logika yang dibagikan
+- **lib/**: Utilitas inti dan logika yang dibagikan
+  - Utilitas umum
+  - Definisi tipe
+- **server/**: Kode khusus server-side
+  - Implementasi API
+  - Setup otentikasi
+  - Konfigurasi database
+- **trpc/**: Konfigurasi dan router tRPC
+  - Definisi rute API
+  - Prosedur type-safe
+
+### Styles
+
+- **styles/**: Konfigurasi styling global
+  - `globals.css`: Style CSS global, konfigurasi Tailwind, dan konfigurasi tema Shadcn/UI
+
+
+## Mengimpor File
+
+Untuk mengimpor file, Anda dapat menggunakan alias `@/`. Alias ini secara otomatis dikonfigurasi dalam proyek.
+
+```tsx title="src/app/page.tsx"
+import { Navbar } from "@/components/common/navbar";
+import { Articles } from "@/components/home/articles";
+import { Sidebar } from "@/components/home/sidebar";
+import { Button } from "@/components/ui/button";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { getServerAuthSession } from "@/server/auth";
+```
+
+Pendekatan ini sangat berguna ketika Anda bekerja pada proyek besar dengan banyak file dan folder dan dapat dilakukan dengan memperbarui file tsconfig.json sebagai berikut:
+
+<details>
+<summary>Konfigurasi Typescript</summary>
+
+```diff lang="json" title="tsconfig.json" 
+{
+  "compilerOptions": {
+    /* Base Options: */
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "target": "es2022",
+    "allowJs": true,
+    "resolveJsonModule": true,
+    "moduleDetection": "force",
+    "isolatedModules": true,
+
+    /* Strictness */
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "checkJs": true,
+
+    /* Bundled projects */
+    "lib": ["dom", "dom.iterable", "ES2022"],
+    "noEmit": true,
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "jsx": "preserve",
+    "plugins": [{ "name": "next" }],
+    "incremental": true,
+
+    /* Path Aliases */
+    "baseUrl": ".",
++    "paths": {
++      "@/*": ["./src/*"]
++    }
+  },
+  "include": [
+    ".eslintrc.cjs",
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    "**/*.cjs",
+    "**/*.js",
+    ".next/types/**/*.ts"
+  ],
+  "exclude": ["node_modules", "lint-staged.config.js", "commitlint.config.js"]
+}
+```
+</details>

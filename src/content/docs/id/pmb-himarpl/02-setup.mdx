@@ -1,0 +1,145 @@
+---
+title: Setup Pengembangan Lokal
+description: Cara setup Pengembangan Lokal Website PMB HIMARPL
+---
+
+import { Tabs, TabItem } from "@astrojs/starlight/components";
+import { Steps } from "@astrojs/starlight/components";
+import { Code } from "@astrojs/starlight/components";
+
+Panduan ini akan memandu Anda melalui pengaturan lingkungan pengembangan lokal untuk website PMB HIMARPL.
+
+## Prasyarat
+
+Sebelum menginstal aplikasi, pastikan Anda memiliki:
+
+1. [Node.js](https://nodejs.org/en) dan [npm](https://www.npmjs.com/) terinstal
+2. [Git](https://git-scm.com/) terinstal
+3. Akses ke layanan berikut:
+   - Akun CockroachDB
+   - Akun PostHog (opsional)
+
+## Detail Setup Environment
+
+Proyek ini memerlukan beberapa environment variables yang harus diatur dalam file `.env` agar berfungsi dengan baik.
+
+### Setup CockroachDB
+
+Ikuti [Panduan Quickstart CockroachDB](https://www.cockroachlabs.com/docs/cockroachcloud/quickstart) untuk mendapatkan `DATABASE_URL` Anda.
+
+## Langkah Setup
+
+<Steps>
+
+1. Fork dan clone repositori:
+
+   <Tabs>
+     <TabItem label="HTTPS">
+       <Code
+         code={`git clone https://github.com/himarplupi/pmb-himarpl.git`}
+         lang="bash"
+         title="HTTPS"
+       />
+     </TabItem>
+     <TabItem label="SSH">
+       <Code
+         code={`git clone git@github.com:himarplupi/pmb-himarpl.git`}
+         lang="bash"
+         title="SSH"
+       />
+     </TabItem>
+     <TabItem label="GitHub CLI">
+       <Code
+         code={`gh repo clone himarplupi/pmb-himarpl`}
+         lang="bash"
+         title="GitHub CLI"
+       />
+     </TabItem>
+   </Tabs>
+
+2. Navigasi ke direktori proyek:
+
+   ```bash
+   cd pmb-himarpl
+   ```
+
+3. Buat file environment variables:
+   Buat file `.env` di direktori root dengan variabel berikut:
+
+   ```bash
+   DATABASE_URL=
+   NEXT_PUBLIC_BASE_URL="http://localhost:3000"
+   NEXT_PUBLIC_BASE_PATH=""
+   NEXT_BASE_URL="http://localhost:3000"
+   NEXT_PUBLIC_POSTHOG_KEY=
+   NEXT_PUBLIC_POSTHOG_HOST=https://us.i.posthog.com
+   ```
+
+4. Setup remote upstream:
+
+   <Tabs>
+     <TabItem label="HTTPS">
+       <Code
+         code={`git remote add upstream https://github.com/himarplupi/pmb-himarpl.git`}
+         lang="bash"
+         title="HTTPS"
+       />
+     </TabItem>
+     <TabItem label="SSH">
+       <Code
+         code={`git remote add upstream git@github.com:himarplupi/pmb-himarpl.git`}
+         lang="bash"
+         title="SSH"
+       />
+     </TabItem>
+     <TabItem label="GitHub CLI">
+       <Code
+         code={`gh repo sync himarplupi/pmb-himarpl`}
+         lang="bash"
+         title="GitHub CLI"
+       />
+     </TabItem>
+   </Tabs>
+
+5. Instal dependensi dan mulai server pengembangan:
+
+   ```bash
+   npm ci              # Instal dependensi
+   npm run db:push     # Push skema database ke CockroachDB
+   npm run dev         # Mulai server pengembangan
+   ```
+
+   Aplikasi sekarang harus berjalan di `http://localhost:3000`.
+
+6. Buat branch baru untuk perubahan Anda:
+
+   ```bash
+   git checkout -b my-feature-branch
+   ```
+
+7. Setelah Anda puas dengan perubahan Anda, tambahkan dan commit ke branch Anda, lalu push branch Anda ke fork Anda.
+
+   ```bash
+   git add .
+   git commit # Silakan ikuti pedoman commit di bawah ini   
+   git push -u origin my-feature-branch
+   ```
+
+   :::note[PENTING]
+    Sebelum melakukan commit dan membuka Pull Request, silakan baca [Pedoman Commit](/id/getting-started/05-contribution-guide/#commit-guidelines) dan [Kebijakan Pull Request](/id/getting-started/05-contribution-guide/#pull-request-policy) di bawah ini.
+   :::
+
+8. Buat Pull Request.
+   :::note[CATATAN]
+    Kami meminta penulis PR untuk menghindari rebasing/memperbarui PR mereka dengan branch `main` secara tidak perlu.
+   :::
+</Steps>
+
+## Script yang Tersedia
+
+- `npm run dev` - Memulai server pengembangan dengan hot reload
+- `npm run build` - Membuat build produksi
+- `npm run start` - Memulai server produksi
+- `npm run db:push` - Mendorong skema database ke CockroachDB
+- `npm run db:studio` - Membuka Prisma Studio untuk manajemen database
+- `npm run lint` - Menjalankan pemeriksaan linting
