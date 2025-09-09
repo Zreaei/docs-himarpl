@@ -52,7 +52,7 @@ The documentation covers:
 
 ## 🌐 Deployment
 
-This documentation is deployed on Vercel and available at [docs.himarpl.com](https://docs.himarpl.com)
+This documentation is deployed on Vercel and available at [docs.himarpl.org](https://docs.himarpl.org)
 
 ## 📝 License
 
@@ -68,7 +68,7 @@ For questions or issues:
 
 - Open a GitHub issue
 - Contact Kominfo Department
-- Visit [himarpl.com](https://www.himarpl.com)
+- Visit [himarpl.org](https://www.himarpl.org)
 
 ## 👀 Want to learn more?
 
